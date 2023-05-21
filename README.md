@@ -24,5 +24,6 @@
 
 
 # 用到的开源项目 / Used libraries ✈️
-### [Xposed](https://github.com/rovo89/Xposed)
-### [EzXHelper](https://github.com/KyuubiRan/EzXHelper)
+### [PermissionX](https://github.com/guolindev/PermissionX)
+### [ZXing](https://github.com/zxing/zxing)
+### [Glide](https://github.com/bumptech/glide)
