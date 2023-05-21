@@ -2,7 +2,7 @@
 
 ## [下载 / Download](https://github.com/CoolestEnoch/SimpleQrScanner/releases/latest)
 
-# 这是个啥？/ What's this? 🤔
+# 这是个啥？/ What's this? 🧐
 > 一个简单的二维码扫描器和生成器。不申请联网权、存储权限，文件通过Mediaprovider进行读取，使用的uri用后即焚，全程需您的授权，本应用不会扫描任何设备资料。</br>
 > A QR code generator & scanner. It never request permissions like network and storage, files are read through Mediaprovider, the URI used is burned after use, the whole process requires your authorization, this application will not scan any device data.
 
