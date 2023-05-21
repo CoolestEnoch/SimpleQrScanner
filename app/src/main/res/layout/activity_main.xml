@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="4"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="18dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etInputQrContent"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="二维码内容"
+                        android:minLines="1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnClear"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:tooltipText="CR200J型动力集中动车组"
+                    android:backgroundTint="@color/dynamic_light"
+                    android:contentDescription="CR200J型动力集中动车组"
+                    android:src="@drawable/baseline_delete_24" />
+
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/sbQrSize"
+                android:layout_width="match_parent"
+                android:progress="40"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:max="100"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="20dp"/>
+
+            <ImageView
+                android:id="@+id/ivGeneratedQr"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:layout_width="match_parent"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:layout_height="wrap_content"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnScanQR"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:backgroundTint="@color/dynamic_light"
+                    android:tooltipText="扫描二维码"
+                    android:contentDescription="扫描二维码"
+                    android:src="@drawable/baseline_qr_code_scanner_24" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnScanFromGallery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:backgroundTint="@color/dynamic_light"
+                    android:tooltipText="从相册选择图片"
+                    android:contentDescription="从相册选择图片"
+                    android:src="@drawable/baseline_image_24" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutScanResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_weight="4"
+                    android:layout_marginStart="18dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="18dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etScanResult"
+                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:hint="扫描结果"
+                        android:editable="false"
+                        android:minLines="1" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnOpenUri"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:layout_marginEnd="10dp"
+                    android:visibility="gone"
+                    android:backgroundTint="@color/dynamic_light"
+                    android:tooltipText="打开链接"
+                    android:contentDescription="打开链接"
+                    android:src="@drawable/baseline_link_24" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btnCopy"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:backgroundTint="@color/dynamic_light"
+                    android:tooltipText="复制"
+                    android:contentDescription="复制"
+                    android:src="@drawable/baseline_content_copy_24" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
