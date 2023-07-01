@@ -1,4 +1,4 @@
-package cool.scanner
+package cool.scanner.ui
 
 import android.Manifest
 import android.content.ClipData
@@ -22,7 +22,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.TooltipCompat
 import androidx.core.widget.doAfterTextChanged
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -41,7 +40,9 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import com.permissionx.guolindev.PermissionX
+import cool.scanner.R
 import cool.scanner.databinding.ActivityMainBinding
+import cool.scanner.utils.getClipboard
 import java.util.EnumMap
 
 
@@ -53,6 +54,33 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     lateinit var clipBoardManager: ClipboardManager
 
+    fun checkXposed() = false
+
+    override fun onResume() {
+        super.onResume()
+
+        if(checkXposed()){
+            Snackbar.make(window.decorView, "XPosed已激活", Snackbar.LENGTH_LONG).show()
+        }
+
+        // 由xposed调用
+        if (intent.getBooleanExtra("startFromMIUIControlCentre", false)) {
+            binding.btnScanQR.callOnClick()
+        }
+
+        //接收来自其他应用的分享
+        if (intent.action.equals(Intent.ACTION_SEND) && intent.type.equals("image/*")) {
+            val uri: Uri? = intent.getParcelableExtra(Intent.EXTRA_STREAM)
+            var bitmap: Bitmap? = null
+            uri?.let { uri ->
+                val inputStream = contentResolver.openInputStream(uri)
+                bitmap = BitmapFactory.decodeStream(inputStream)
+                inputStream?.close()
+            }
+            bitmap?.let { scanQrFromBitmapAndSetView(it) }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -62,18 +90,9 @@ class MainActivity : AppCompatActivity() {
         clipBoardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
 
-        //接收来自其他应用的分享
-        if(intent.action.equals(Intent.ACTION_SEND) && intent.type.equals("image/*")){
-            val uri: Uri? = intent.getParcelableExtra(Intent.EXTRA_STREAM)
-            var bitmap:Bitmap? = null
-            uri?.let { uri ->
-                val inputStream = contentResolver.openInputStream(uri)
-                bitmap = BitmapFactory.decodeStream(inputStream)
-                inputStream?.close()
-            }
-            bitmap?.let { scanQrFromBitmapAndSetView(it) }
+        binding.btnPaste.setOnClickListener {
+            binding.etInputQrContent.setText(getClipboard(this@MainActivity))
         }
-
 
         binding.btnClear.setOnClickListener {
             Log.e("", "")
@@ -85,10 +104,11 @@ class MainActivity : AppCompatActivity() {
             false
         }*/
         binding.btnClear.setOnTouchListener { view, motionEvent ->
-            when(motionEvent.action){
+            when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
                     (view as FloatingActionButton).setImageResource(R.mipmap.cr200j)
                 }
+
                 MotionEvent.ACTION_UP -> {
                     (view as FloatingActionButton).setImageResource(R.drawable.baseline_delete_24)
                 }
@@ -207,9 +227,11 @@ class MainActivity : AppCompatActivity() {
                     Snackbar.LENGTH_LONG
                 ).setAction("继续") {
                     try {
+                        Intent("")
                         startActivity(Intent().apply {
                             action = "android.intent.action.VIEW"
                             data = Uri.parse(scanResult)
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         })
                     } catch (e: Exception) {
                         popupErrorWindow(this@MainActivity, e)
@@ -259,7 +281,7 @@ class MainActivity : AppCompatActivity() {
 
     fun popupErrorWindow(context: Context, e: Exception) {
         val errLog = StringBuilder().apply {
-            for (msg in e.stackTrace){
+            for (msg in e.stackTrace) {
                 this.append("$msg \n")
             }
         }.toString()
@@ -283,13 +305,13 @@ class MainActivity : AppCompatActivity() {
                     })
                 })
             })
-            setPositiveButton("复制"){_,_ ->
+            setPositiveButton("复制") { _, _ ->
                 copy(errLog)
             }
         }.show()
     }
 
-    fun copy(str:String){
+    fun copy(str: String) {
         val mClipData = ClipData.newPlainText("Label", str)
         // 将ClipData内容放到系统剪贴板里。
         clipBoardManager.setPrimaryClip(mClipData)
@@ -329,12 +351,24 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             QR_REQUEST_CODE -> {
-                val data = data!!.extras!!.getString("SCAN_RESULT")
+                val data = data?.extras?.getString("SCAN_RESULT")
                 if (data == "null") {
                     Snackbar.make(window.decorView, "没有扫描到任何内容", Snackbar.LENGTH_LONG)
                         .show()
                 } else {
                     binding.etScanResult.setText(data)
+                    // 判断是不是可打开的uri
+                    val authority = Uri.parse(data).authority
+                    if (!TextUtils.isEmpty(authority)) {
+                        if(data!!.startsWith("https://") || data!!.startsWith("http://")){
+                            binding.btnOpenUri.setImageResource(R.drawable.baseline_link_24)
+                        }else{
+                            binding.btnOpenUri.setImageResource(R.drawable.baseline_android_24)
+                        }
+                        binding.btnOpenUri.visibility = View.VISIBLE
+                    } else {
+                        binding.btnOpenUri.visibility = View.GONE
+                    }
                 }
             }
 
@@ -349,7 +383,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun scanQrFromBitmapAndSetView(bitmap: Bitmap){
+    fun scanQrFromBitmapAndSetView(bitmap: Bitmap) {
         val scanResult = decodeQR(bitmap).toString()
         if (scanResult == "null") {
             Snackbar.make(window.decorView, "没有扫描到任何内容", Snackbar.LENGTH_LONG)
@@ -360,6 +394,11 @@ class MainActivity : AppCompatActivity() {
             // 判断是不是可打开的uri
             val authority = Uri.parse(scanResult).authority
             if (!TextUtils.isEmpty(authority)) {
+                if(scanResult!!.startsWith("https://") || scanResult!!.startsWith("http://")){
+                    binding.btnOpenUri.setImageResource(R.drawable.baseline_link_24)
+                }else{
+                    binding.btnOpenUri.setImageResource(R.drawable.baseline_android_24)
+                }
                 binding.btnOpenUri.visibility = View.VISIBLE
             } else {
                 binding.btnOpenUri.visibility = View.GONE

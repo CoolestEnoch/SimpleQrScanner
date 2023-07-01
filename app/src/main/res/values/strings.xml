@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">轻丶扫</string>
+    <string name="xposeddescription">使用轻扫代替MIUI控制中心里的扫一扫</string>
 </resources>
