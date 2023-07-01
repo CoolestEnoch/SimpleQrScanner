@@ -18,6 +18,7 @@
 - [x] 相册选图扫码 / Scan from gallery
 - [x] 其他应用分享图片到本应用扫码 / Scan from other apps' share
 - [x] 复制扫码内容(如果是链接则可以手动打开它) / Copy scan result(if it is a link then you can open it manually)
+- [x] 从MIUI的控制中心的扫一扫处进入本软件(需要XPosed框架支持) / Scan QR code from MIUI's control panel (need XPosed support)
 
 # 未来待实现功能(咕咕咕) / Under development 🕊️
 - [ ] ??? / IDK(lol)
