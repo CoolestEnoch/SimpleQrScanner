@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        if(checkXposed()){
+        if (checkXposed()) {
             Snackbar.make(window.decorView, "XPosed已激活", Snackbar.LENGTH_LONG).show()
         }
 
@@ -358,16 +358,19 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     binding.etScanResult.setText(data)
                     // 判断是不是可打开的uri
-                    val authority = Uri.parse(data).authority
-                    if (!TextUtils.isEmpty(authority)) {
-                        if(data!!.startsWith("https://") || data!!.startsWith("http://")){
-                            binding.btnOpenUri.setImageResource(R.drawable.baseline_link_24)
-                        }else{
-                            binding.btnOpenUri.setImageResource(R.drawable.baseline_android_24)
+                    try {
+                        val authority = Uri.parse(data).authority
+                        if (!TextUtils.isEmpty(authority)) {
+                            if (data!!.startsWith("https://") || data!!.startsWith("http://")) {
+                                binding.btnOpenUri.setImageResource(R.drawable.baseline_link_24)
+                            } else {
+                                binding.btnOpenUri.setImageResource(R.drawable.baseline_android_24)
+                            }
+                            binding.btnOpenUri.visibility = View.VISIBLE
+                        } else {
+                            binding.btnOpenUri.visibility = View.GONE
                         }
-                        binding.btnOpenUri.visibility = View.VISIBLE
-                    } else {
-                        binding.btnOpenUri.visibility = View.GONE
+                    } catch (e: Exception) {
                     }
                 }
             }
@@ -394,9 +397,9 @@ class MainActivity : AppCompatActivity() {
             // 判断是不是可打开的uri
             val authority = Uri.parse(scanResult).authority
             if (!TextUtils.isEmpty(authority)) {
-                if(scanResult!!.startsWith("https://") || scanResult!!.startsWith("http://")){
+                if (scanResult!!.startsWith("https://") || scanResult!!.startsWith("http://")) {
                     binding.btnOpenUri.setImageResource(R.drawable.baseline_link_24)
-                }else{
+                } else {
                     binding.btnOpenUri.setImageResource(R.drawable.baseline_android_24)
                 }
                 binding.btnOpenUri.visibility = View.VISIBLE
