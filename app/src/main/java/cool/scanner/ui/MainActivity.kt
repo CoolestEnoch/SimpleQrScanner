@@ -56,31 +56,6 @@ class MainActivity : AppCompatActivity() {
 
     fun checkXposed() = false
 
-    override fun onResume() {
-        super.onResume()
-
-        if (checkXposed()) {
-            Snackbar.make(window.decorView, "XPosed已激活", Snackbar.LENGTH_LONG).show()
-        }
-
-        // 由xposed调用
-        if (intent.getBooleanExtra("startFromMIUIControlCentre", false)) {
-            binding.btnScanQR.callOnClick()
-        }
-
-        //接收来自其他应用的分享
-        if (intent.action.equals(Intent.ACTION_SEND) && intent.type.equals("image/*")) {
-            val uri: Uri? = intent.getParcelableExtra(Intent.EXTRA_STREAM)
-            var bitmap: Bitmap? = null
-            uri?.let { uri ->
-                val inputStream = contentResolver.openInputStream(uri)
-                bitmap = BitmapFactory.decodeStream(inputStream)
-                inputStream?.close()
-            }
-            bitmap?.let { scanQrFromBitmapAndSetView(it) }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -88,6 +63,11 @@ class MainActivity : AppCompatActivity() {
 
         //相关系统服务
         clipBoardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+
+        if (checkXposed()) {
+            Snackbar.make(window.decorView, "XPosed已激活", Snackbar.LENGTH_LONG).show()
+        }
 
 
         binding.btnPaste.setOnClickListener {
@@ -276,6 +256,27 @@ class MainActivity : AppCompatActivity() {
                 binding.etScanResult.clearFocus()
             }.show()
             true
+        }
+
+
+
+
+
+        // 由xposed调用
+        if (intent.getBooleanExtra("startFromMIUIControlCentre", false)) {
+            binding.btnScanQR.callOnClick()
+        }
+
+        //接收来自其他应用的分享
+        if (intent.action.equals(Intent.ACTION_SEND) && intent.type.equals("image/*")) {
+            val uri: Uri? = intent.getParcelableExtra(Intent.EXTRA_STREAM)
+            var bitmap: Bitmap? = null
+            uri?.let { uri ->
+                val inputStream = contentResolver.openInputStream(uri)
+                bitmap = BitmapFactory.decodeStream(inputStream)
+                inputStream?.close()
+            }
+            bitmap?.let { scanQrFromBitmapAndSetView(it) }
         }
     }
 

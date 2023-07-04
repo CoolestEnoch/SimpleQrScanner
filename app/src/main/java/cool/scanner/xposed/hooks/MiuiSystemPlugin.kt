@@ -1,7 +1,10 @@
 package cool.scanner.xposed.hooks
 
+import android.content.Context
 import android.content.Intent
 import com.github.kyuubiran.ezxhelper.utils.findMethod
+import com.github.kyuubiran.ezxhelper.utils.getObject
+import com.github.kyuubiran.ezxhelper.utils.getObjectAs
 import com.github.kyuubiran.ezxhelper.utils.hookAfter
 import com.github.kyuubiran.ezxhelper.utils.hookBefore
 import com.github.kyuubiran.ezxhelper.utils.hookReplace
@@ -24,18 +27,25 @@ fun hookMiuiSystemPlugin(lpparam: XC_LoadPackage.LoadPackageParam) {
         // 单击进入轻扫
         findMethod("miui.systemui.quicksettings.ScannerTile", classLoader = mClassLoader) {
             name == "handleClick"
-        }.hookReplace {
+        }.hookBefore {
             XposedBridge.log("hooked")
             try {
                 /*val intent = Intent(getCurrentContext(), MainActivity::class.java).apply {
                     putExtra("startFromMIUIControlCentre", true)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }*/
+                // 收起控制中心
+                findMethod("miui.systemui.quicksettings.ScannerTile", classLoader = mClassLoader){name == "collapseStatusBar"}
+                    .invoke(it.thisObject, it.thisObject.getObjectAs<Context>("mPluginContext", Context::class.java))
+
+                // 拉起轻扫
                 val intent = Intent("cool.scanner.START_SCAN_FROM_MIUI_CONTROL_CENTER").apply {
                     putExtra("startFromMIUIControlCentre", true)
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
                 getCurrentContext().startActivity(intent)
+
+                it.result = Unit
             } catch (e: Exception) {
                 XposedBridge.log(e)
             }
